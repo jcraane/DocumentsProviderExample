@@ -28,12 +28,14 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
         /**
          * For now we just return static content in res.raw folder as an example.
          */
-        val file = File(context?.cacheDir, "cachefile.txt")
-        FileOutputStream(file).use { output ->
-            val buffer = "This is document $documentId".toByteArray()
-            output.write(buffer, 0, buffer.size)
-            output.flush()
+        val file = File(context?.cacheDir, "cachefile.txt").also {
+            FileOutputStream(it).use { output ->
+                val buffer = "This is document $documentId".toByteArray()
+                output.write(buffer, 0, buffer.size)
+                output.flush()
+            }
         }
+
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.parseMode(mode));
     }
 
@@ -44,28 +46,33 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
         val documents = cache.get(notifyUri)
         val cursor = if (documents == null) {
             Timber.i("Documents not in cache, fetching from network.")
-            val cursor = object : MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION) {
-                override fun getExtras(): Bundle {
-                    return Bundle().apply {
-                        putBoolean(DocumentsContract.EXTRA_LOADING, true)
-                    }
-
-                }
+            createLoadingCursor(projection).apply {
+                setNotificationUri(context?.contentResolver, notifyUri)
+            }.also {
+                loadFromNetwork(parentDocumentId, notifyUri)
             }
-            cursor.setNotificationUri(context?.contentResolver, notifyUri)
-            loadFromNetwork(parentDocumentId, notifyUri)
-            cursor
         } else {
             // Documents are found in cache, return the documents by adding them to the cursor.
             Timber.i("Documents in cache, returning.")
-            val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
-            documents.forEach {
-                it.addToRow(cursor.newRow())
+            MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION).also { cursor ->
+                documents.forEach {
+                    it.addToRow(cursor.newRow())
+                }
             }
-            cursor
         }
 
         return cursor
+    }
+
+    private fun createLoadingCursor(projection: Array<out String>?): MatrixCursor {
+        return object : MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION) {
+            override fun getExtras(): Bundle {
+                return Bundle().apply {
+                    putBoolean(DocumentsContract.EXTRA_LOADING, true)
+                }
+
+            }
+        }
     }
 
     /**
