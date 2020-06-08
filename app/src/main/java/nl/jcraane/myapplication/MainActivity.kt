@@ -31,20 +31,15 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Timber.i("onActivityResult")
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_FILE_REQUEST_CODE
-            && resultCode == Activity.RESULT_OK) {
-            // The result data contains a URI for the document or directory that
-            // the user selected.
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                val contentResolver = applicationContext.contentResolver
-                /*val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                contentResolver.takePersistableUriPermission(uri, takeFlags)*/
-
-                contentResolver.openFileDescriptor(uri, "r")?.let { parcelFileDescriptor ->
-                    val descriptor = parcelFileDescriptor.fileDescriptor
-                    FileInputStream(descriptor).use {
-                        val bytes = it.readBytes()
-                        Toast.makeText(this, String(bytes), Toast.LENGTH_SHORT).show()
+                applicationContext.contentResolver.also {
+                    it.openFileDescriptor(uri, "r")?.let { parcelFileDescriptor ->
+                        val descriptor = parcelFileDescriptor.fileDescriptor
+                        FileInputStream(descriptor).use {
+                            val bytes = it.readBytes()
+                            Toast.makeText(this, String(bytes), Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
@@ -52,6 +47,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val PICK_FILE_REQUEST_CODE  = 1
+        private const val PICK_FILE_REQUEST_CODE = 1
     }
 }
