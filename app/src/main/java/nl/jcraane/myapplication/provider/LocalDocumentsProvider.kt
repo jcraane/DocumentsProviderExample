@@ -7,10 +7,10 @@ import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import android.provider.DocumentsProvider
 import nl.jcraane.myapplication.R
-import nl.jcraane.myapplication.provider.ProdiverConfig.DEFAULT_DOCUMENT_PROJECTION
-import nl.jcraane.myapplication.provider.ProdiverConfig.DEFAULT_ROOT_PROJECTION
-import nl.jcraane.myapplication.provider.ProdiverConfig.ROOT_FOLDER_ID
-import nl.jcraane.myapplication.provider.ProdiverConfig.ROOT_ID
+import nl.jcraane.myapplication.provider.ProviderConfig.DEFAULT_DOCUMENT_PROJECTION
+import nl.jcraane.myapplication.provider.ProviderConfig.DEFAULT_ROOT_PROJECTION
+import nl.jcraane.myapplication.provider.ProviderConfig.ROOT_FOLDER_ID
+import nl.jcraane.myapplication.provider.ProviderConfig.ROOT_ID
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream

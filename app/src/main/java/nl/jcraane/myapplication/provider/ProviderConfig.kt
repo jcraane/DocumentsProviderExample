@@ -2,7 +2,7 @@ package nl.jcraane.myapplication.provider
 
 import android.provider.DocumentsContract
 
-object ProdiverConfig {
+object ProviderConfig {
     const val ROOT_ID = "ROOT_1"
     const val ROOT_FOLDER_ID = "ROOT_FOLDER_1"
     val DEFAULT_ROOT_PROJECTION: Array<String> = arrayOf(
