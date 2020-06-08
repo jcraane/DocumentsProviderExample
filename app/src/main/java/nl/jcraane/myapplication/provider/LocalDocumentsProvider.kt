@@ -79,27 +79,6 @@ class LocalDocumentsProvider : DocumentsProvider() {
         return cursor
     }
 
-    private fun getDocuments(documentId: String?, projection: Array<out String>?): Cursor {
-        val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
-
-        if (documentId == ROOT_FOLDER_ID) {
-            for (i in 0..10) {
-                val row = cursor.newRow()
-                with(row) {
-                    add(DocumentsContract.Document.COLUMN_DOCUMENT_ID, i.toShort())
-                    add(DocumentsContract.Document.COLUMN_MIME_TYPE, if (i == 0) DocumentsContract.Document.MIME_TYPE_DIR else "text/plain")
-                    add(DocumentsContract.Document.COLUMN_DISPLAY_NAME, "name$i")
-                    add(DocumentsContract.Document.COLUMN_LAST_MODIFIED, 0)
-                    add(DocumentsContract.Document.COLUMN_FLAGS, 0)
-                    add(DocumentsContract.Document.COLUMN_SIZE, 10)
-                }
-
-            }
-        }
-
-        return cursor
-    }
-
     override fun queryDocument(documentId: String?, projection: Array<out String>?): Cursor {
         Timber.i("queryDocument(documentId, projection)($documentId,$projection)")
         val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
