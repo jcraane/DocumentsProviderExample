@@ -17,8 +17,21 @@
             </intent-filter>
         </activity>
 
+<!--
         <provider
             android:name=".provider.LocalDocumentsProvider"
+            android:authorities="${documentsAuthority}"
+            android:grantUriPermissions="true"
+            android:exported="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+-->
+
+        <provider
+            android:name=".provider.SimulateNetworkDocumentsProvider"
             android:authorities="${documentsAuthority}"
             android:grantUriPermissions="true"
             android:exported="true"
