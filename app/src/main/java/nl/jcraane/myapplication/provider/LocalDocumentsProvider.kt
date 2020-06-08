@@ -15,30 +15,21 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
-//todo test state (for example if the use has selected a subfolder and closes the picker and opens it again at a later stage).
 class LocalDocumentsProvider : DocumentsProvider() {
-    override fun openDocument(
-        documentId: String?,
-        mode: String?,
-        signal: CancellationSignal?
-    ): ParcelFileDescriptor {
+    override fun openDocument(documentId: String?, mode: String?, signal: CancellationSignal?): ParcelFileDescriptor {
         /**
          * For now we just return static content in res.raw folder as an example.
          */
-        val file = File(context?.getCacheDir(), "cachefile.txt")
-        FileOutputStream(file).use({ output ->
+        val file = File(context?.cacheDir, "cachefile.txt")
+        FileOutputStream(file).use { output ->
             val buffer = "This is document $documentId".toByteArray()
             output.write(buffer, 0, buffer.size)
             output.flush()
-        })
+        }
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.parseMode(mode));
     }
 
-    override fun queryChildDocuments(
-        parentDocumentId: String?,
-        projection: Array<out String>?,
-        sortOrder: String?
-    ): Cursor {
+    override fun queryChildDocuments(parentDocumentId: String?, projection: Array<out String>?, sortOrder: String?): Cursor {
         Timber.i("queryChildDocuments(parentDocumentId, projection, sortOrder)($parentDocumentId, $projection, $sortOrder)")
         val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
 
@@ -117,10 +108,7 @@ class LocalDocumentsProvider : DocumentsProvider() {
                 with(row) {
                     add(DocumentsContract.Root.COLUMN_ROOT_ID, ROOT_ID)
                     add(DocumentsContract.Root.COLUMN_ICON, R.drawable.ic_launcher_foreground)
-                    add(
-                        DocumentsContract.Root.COLUMN_TITLE,
-                        context?.getString(R.string.app_name) ?: "DocumentsProviderExample"
-                    )
+                    add(DocumentsContract.Root.COLUMN_TITLE, context?.getString(R.string.app_name) ?: "DocumentsProviderExample")
                     add(DocumentsContract.Root.COLUMN_FLAGS, 0)
                     add(DocumentsContract.Root.COLUMN_DOCUMENT_ID, ROOT_FOLDER_ID)
                 }
