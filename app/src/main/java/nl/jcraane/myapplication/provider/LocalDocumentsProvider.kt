@@ -15,29 +15,23 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
+//todo test state (for example if the use has selected a subfolder and closes the picker and opens it again at a later stage).
 class LocalDocumentsProvider : DocumentsProvider() {
     override fun openDocument(
         documentId: String?,
         mode: String?,
         signal: CancellationSignal?
     ): ParcelFileDescriptor {
-        val descriptor = context?.resources?.openRawResource(R.raw.sample)?.use { input ->
-            val file = File(context?.getCacheDir(), "cacheFileAppeal.srl")
-            FileOutputStream(file).use({ output ->
-                val buffer = ByteArray(4 * 1024) // or other buffer size
-                var read: Int = 0
-                while (input.read(buffer).also({ read = it }) != -1) {
-                    output.write(buffer, 0, read)
-                }
-                output.flush()
-            })
-            ParcelFileDescriptor.open(file, ParcelFileDescriptor.parseMode(mode));
-        }
-
-        if (descriptor == null) {
-            throw IllegalArgumentException("Null descriptor")
-        }
-        return descriptor
+        /**
+         * For now we just return static content in res.raw folder as an example.
+         */
+        val file = File(context?.getCacheDir(), "cachefile.txt")
+        FileOutputStream(file).use({ output ->
+            val buffer = "This is document $documentId".toByteArray()
+            output.write(buffer, 0, buffer.size)
+            output.flush()
+        })
+        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.parseMode(mode));
     }
 
     override fun queryChildDocuments(
@@ -49,6 +43,9 @@ class LocalDocumentsProvider : DocumentsProvider() {
         val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
 
         if (parentDocumentId == ROOT_FOLDER_ID) {
+            /**
+             * If the parentDocumentId is the root, we return the files and folders directly below the root (the first level).
+             */
             for (i in 0..10) {
                 val row = cursor.newRow()
                 with(row) {
@@ -62,6 +59,9 @@ class LocalDocumentsProvider : DocumentsProvider() {
 
             }
         } else {
+            /**
+             * Return the files and folders below the selected parentDocumentId.
+             */
             for (i in 0..2) {
                 val row = cursor.newRow()
                 with(row) {
@@ -82,6 +82,11 @@ class LocalDocumentsProvider : DocumentsProvider() {
     override fun queryDocument(documentId: String?, projection: Array<out String>?): Cursor {
         Timber.i("queryDocument(documentId, projection)($documentId,$projection)")
         val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
+        /**
+         * When the root folder is opened, we return a cursor containing the root. Mention that the mime type of the root is a
+         * directory because there are typical more files and folders below the root folder. This indicaties to SAF the for this
+         * document, the queryChildDocuments should be queried.
+         */
         if (documentId == ROOT_FOLDER_ID) {
             val row = cursor.newRow()
             with(row) {
@@ -101,6 +106,9 @@ class LocalDocumentsProvider : DocumentsProvider() {
         return true
     }
 
+    /**
+     * This is the root of the documents. For example when in Gmail an attachment is added, this root is visible in the Open from dialog.
+     */
     override fun queryRoots(projection: Array<out String>?): Cursor {
         Timber.i("queryRoots")
         return MatrixCursor(projection ?: DEFAULT_ROOT_PROJECTION)
