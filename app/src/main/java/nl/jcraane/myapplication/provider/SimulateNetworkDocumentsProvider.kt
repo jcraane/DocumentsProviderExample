@@ -39,23 +39,30 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
 
     override fun queryChildDocuments(parentDocumentId: String?, projection: Array<out String>?, sortOrder: String?): Cursor {
         Timber.i("queryChildDocuments(parentDocumentId, projection, sortOrder)($parentDocumentId, $projection, $sortOrder)")
-        val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
 
         val notifyUri = DocumentsContract.buildChildDocumentsUri(BuildConfig.DOCUMENTS_AUTHORITY, parentDocumentId)
         val documents = cache.get(notifyUri)
-        if (documents == null) {
+        val cursor = if (documents == null) {
             Timber.i("Documents not in cache, fetching from network.")
-            cursor.extras = Bundle().apply {
-                putBoolean(DocumentsContract.EXTRA_LOADING, true)
+            val cursor = object : MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION) {
+                override fun getExtras(): Bundle {
+                    return Bundle().apply {
+                        putBoolean(DocumentsContract.EXTRA_LOADING, true)
+                    }
+
+                }
             }
             cursor.setNotificationUri(context?.contentResolver, notifyUri)
             loadFromNetwork(parentDocumentId, notifyUri)
+            cursor
         } else {
             // Documents are found in cache, return the documents by adding them to the cursor.
             Timber.i("Documents in cache, returning.")
+            val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
             documents.forEach {
                 it.addToRow(cursor.newRow())
             }
+            cursor
         }
 
         return cursor
@@ -110,6 +117,7 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
         }
     }
 
+//    todo fix queryDocument for non-root level.
     override fun queryDocument(documentId: String?, projection: Array<out String>?): Cursor {
         Timber.i("queryDocument(documentId, projection)($documentId,$projection)")
         val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
