@@ -117,7 +117,6 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
         }
     }
 
-//    todo fix queryDocument for non-root level.
     override fun queryDocument(documentId: String?, projection: Array<out String>?): Cursor {
         Timber.i("queryDocument(documentId, projection)($documentId,$projection)")
         val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
