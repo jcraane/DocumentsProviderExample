@@ -33,8 +33,8 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                applicationContext.contentResolver.also {
-                    it.openFileDescriptor(uri, "r")?.let { parcelFileDescriptor ->
+                applicationContext.contentResolver.also { contentResolver ->
+                    contentResolver.openFileDescriptor(uri, "r")?.let { parcelFileDescriptor ->
                         val descriptor = parcelFileDescriptor.fileDescriptor
                         FileInputStream(descriptor).use {
                             val bytes = it.readBytes()
