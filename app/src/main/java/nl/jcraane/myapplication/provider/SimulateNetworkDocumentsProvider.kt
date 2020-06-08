@@ -136,7 +136,6 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
                 add(DocumentsContract.Document.COLUMN_FLAGS, 0)
                 add(DocumentsContract.Document.COLUMN_SIZE, null)
             }
-
         }
 
         return cursor
