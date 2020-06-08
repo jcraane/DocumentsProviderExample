@@ -26,7 +26,8 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
 
     override fun openDocument(documentId: String?, mode: String?, signal: CancellationSignal?): ParcelFileDescriptor {
         /**
-         * For now we just return static content in res.raw folder as an example.
+         * For now we just return static content in res.raw folder as an example. We could also download the document using
+         * a URL and return that.
          */
         val file = File(context?.cacheDir, "cachefile.txt").also {
             FileOutputStream(it).use { output ->
