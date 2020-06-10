@@ -51,9 +51,8 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
             }
         }*/
 
-//        this solution does not work with gmail, message from gmail: "Can't attach empty file"
-//        This solution does work with the ACTION_OPEN_DOCUMENT intent launched from the MainActivity
-
+//        this solution (with createReliablePipe) does not work with gmail, message from gmail: "Can't attach empty file"
+//        This solution (createReliablePipe) does work with the ACTION_OPEN_DOCUMENT intent launched from the MainActivity
         val pipes = ParcelFileDescriptor.createReliablePipe()
 
 //        When not using an asynctask, the app hangs when large files are processed.
