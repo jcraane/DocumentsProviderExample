@@ -24,7 +24,8 @@ import java.io.FileOutputStream
 
 class WriteFileTask(
     private val out: ParcelFileDescriptor,
-    private val buffer: ByteArray) : AsyncTask<Unit, Unit, Unit>() {
+    private val buffer: ByteArray
+) : AsyncTask<Unit, Unit, Unit>() {
 
     override fun doInBackground(vararg params: Unit?) {
         println("In background")
@@ -39,24 +40,30 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
     private val cache = DocumentCache()
 
     override fun openDocument(documentId: String?, mode: String?, signal: CancellationSignal?): ParcelFileDescriptor {
-        /**
-         * For now we just return static content base on the documentId.
-         */
-        // This solution works with gmail.
-        /*val file = File(context?.cacheDir, "cachefile.txt").also {
+        Timber.i("openDpcument(documentId,mode,signal)($documentId,$mode,$signal)")
+        return readFileUsingOpenDocument(documentId, mode)
+//        return readFileUsingReliablePipe()
+    }
+
+    // This solution works with gmail.
+    private fun readFileUsingOpenDocument(documentId: String?, mode: String?): ParcelFileDescriptor {
+        val file = File(context?.cacheDir, "cachefile.txt").also {
             FileOutputStream(it).use { output ->
-                val buffer = "This is document $documentId".toByteArray()
-                output.write(buffer, 0, buffer.size)
-                output.flush()
+                context?.resources?.openRawResource(R.raw.dynamodb)?.readBytes()?.let { bytes ->
+                    output.write(bytes, 0, bytes.size)
+                    output.flush()
+                }
             }
-        }*/
+        }
+        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.parseMode(mode))
+    }
 
-//        this solution (with createReliablePipe) does not work with gmail, message from gmail: "Can't attach empty file"
+    //        this solution (with createReliablePipe) does not work with gmail, message from gmail: "Can't attach empty file"
 //        This solution (createReliablePipe) does work with the ACTION_OPEN_DOCUMENT intent launched from the MainActivity
+    //        When not using an asynctask, the app hangs when large files are processed.
+    // todo how to provide feedback of the download status?
+    private fun readFileUsingReliablePipe(): ParcelFileDescriptor {
         val pipes = ParcelFileDescriptor.createReliablePipe()
-
-//        When not using an asynctask, the app hangs when large files are processed.
-        // todo how to provide feedback of the download status?
         context?.resources?.openRawResource(R.raw.dynamodb)?.readBytes()?.let {
             WriteFileTask(pipes[1], it).execute()
         }
