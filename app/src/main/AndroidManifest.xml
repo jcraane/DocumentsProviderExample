@@ -17,6 +17,45 @@
             </intent-filter>
         </activity>
 
+<!--        when the documents provider is commented and this one active, this activity is opened to select files to use from the calling application. -->
+        <!--<activity android:name=".picker.MyPickerActivity" >
+            <intent-filter>
+
+                <action android:name="android.intent.action.GET_CONTENT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <category android:name="android.intent.category.OPENABLE" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+
+            <intent-filter>
+
+                <action
+                    android:name="android.intent.action.OPEN_DOCUMENT" />
+
+                <category
+                    android:name="android.intent.category.DEFAULT" />
+
+                <category
+                    android:name="android.intent.category.OPENABLE" />
+
+                <data
+                    android:mimeType="*/*" />
+            </intent-filter>
+        </activity>-->
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="nl.jcraane.myapplication.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
         <!--
                 <provider
                     android:name=".provider.LocalDocumentsProvider"
@@ -30,7 +69,7 @@
                 </provider>
         -->
 
-        <provider
+      <!--  <provider
             android:name=".provider.SimulateNetworkDocumentsProvider"
             android:authorities="${documentsAuthority}"
             android:exported="true"
@@ -39,7 +78,7 @@
             <intent-filter>
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
-        </provider>
+        </provider>-->
 
     </application>
 
