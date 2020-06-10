@@ -3,6 +3,7 @@ package nl.jcraane.myapplication.provider
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
@@ -21,6 +22,19 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
+class WriteFileTask(
+    private val out: ParcelFileDescriptor,
+    private val buffer: ByteArray) : AsyncTask<Unit, Unit, Unit>() {
+
+    override fun doInBackground(vararg params: Unit?) {
+        println("In background")
+        ParcelFileDescriptor.AutoCloseOutputStream(out).use {
+            it.write(buffer)
+            it.flush()
+        }
+    }
+}
+
 class SimulateNetworkDocumentsProvider : DocumentsProvider() {
     private val cache = DocumentCache()
 
@@ -28,15 +42,26 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
         /**
          * For now we just return static content base on the documentId.
          */
-        val file = File(context?.cacheDir, "cachefile.txt").also {
+        // This solution works with gmail.
+        /*val file = File(context?.cacheDir, "cachefile.txt").also {
             FileOutputStream(it).use { output ->
                 val buffer = "This is document $documentId".toByteArray()
                 output.write(buffer, 0, buffer.size)
                 output.flush()
             }
-        }
+        }*/
 
-        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.parseMode(mode));
+//        this solution does not work with gmail, message from gmail: "Can't attach empty file"
+//        This solution does work with the ACTION_OPEN_DOCUMENT intent launched from the MainActivity
+
+        val pipes = ParcelFileDescriptor.createReliablePipe()
+
+//        When not using an asynctask, the app hangs when large files are processed.
+        // todo how to provide feedback of the download status?
+        context?.resources?.openRawResource(R.raw.dynamodb)?.readBytes()?.let {
+            WriteFileTask(pipes[1], it).execute()
+        }
+        return pipes[0]
     }
 
     override fun queryChildDocuments(parentDocumentId: String?, projection: Array<out String>?, sortOrder: String?): Cursor {

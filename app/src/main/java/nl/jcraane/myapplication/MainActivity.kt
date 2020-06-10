@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     fun openFile() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
-            type = "text/plain"
+            type = "*/*"
         }
 
         startActivityForResult(intent, PICK_FILE_REQUEST_CODE)
@@ -36,9 +36,10 @@ class MainActivity : AppCompatActivity() {
                 applicationContext.contentResolver.also { contentResolver ->
                     contentResolver.openFileDescriptor(uri, "r")?.let { parcelFileDescriptor ->
                         val descriptor = parcelFileDescriptor.fileDescriptor
+                        Timber.i("fileDesciptor = $descriptor")
                         FileInputStream(descriptor).use {
                             val bytes = it.readBytes()
-                            Toast.makeText(this, String(bytes), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Received ${bytes.size} bytes", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
