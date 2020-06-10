@@ -173,6 +173,16 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
                 add(DocumentsContract.Document.COLUMN_FLAGS, 0)
                 add(DocumentsContract.Document.COLUMN_SIZE, null)
             }
+        } else {
+            val row = cursor.newRow()
+            with(row) {
+                add(DocumentsContract.Document.COLUMN_DOCUMENT_ID, documentId)
+                add(DocumentsContract.Document.COLUMN_MIME_TYPE, "application/pdf")
+                add(DocumentsContract.Document.COLUMN_DISPLAY_NAME, "sample.pdf")
+                add(DocumentsContract.Document.COLUMN_LAST_MODIFIED, null)
+                add(DocumentsContract.Document.COLUMN_FLAGS, 0)
+                add(DocumentsContract.Document.COLUMN_SIZE, null)
+            }
         }
 
         return cursor
