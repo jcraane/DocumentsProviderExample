@@ -41,7 +41,9 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
 
     override fun openDocument(documentId: String?, mode: String?, signal: CancellationSignal?): ParcelFileDescriptor {
         Timber.i("openDpcument(documentId,mode,signal)($documentId,$mode,$signal)")
+//        this one works with Gmail
         return readFileUsingOpenDocument(documentId, mode)
+//        this one does not work with Gmail
 //        return readFileUsingReliablePipe()
     }
 
@@ -174,6 +176,7 @@ class SimulateNetworkDocumentsProvider : DocumentsProvider() {
                 add(DocumentsContract.Document.COLUMN_SIZE, null)
             }
         } else {
+//            non-root document is queried. Provide the correct display name and mime type (for openDocument).
             val row = cursor.newRow()
             with(row) {
                 add(DocumentsContract.Document.COLUMN_DOCUMENT_ID, documentId)
