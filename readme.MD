@@ -15,6 +15,8 @@ At the moment switching between the two implementations can be done by enabling 
 
 https://medium.com/androiddevelopers/building-a-documentsprovider-f7f2fb38e86a#.k0ufgiu1l?utm_campaign=android_series_adp_documentsprovider_blog_090716&utm_source=anddev&utm_medium=yt-desc
 https://developer.android.com/guide/topics/providers/create-document-provider
+https://www.dropboxforum.com/t5/Dropbox-API-Support-Feedback/Android-Storage-Access-Framework-support/td-p/147405/page/2
+https://github.com/google/samba-documents-provider
 
 StackOverflow:
 
